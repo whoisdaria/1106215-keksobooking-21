@@ -29,7 +29,7 @@ const getDataElements = (elementsQuantity) => {
     element.offer.guests = `число, количество гостей`;
     element.offer.checkin = TIME_VALUES[getRandomIndex(TIME_VALUES)];
     element.offer.checkout = TIME_VALUES[getRandomIndex(TIME_VALUES)];
-    element.offer.features = FEATURES.slice(getRandomIndex(FEATURES), getRandomIndex(FEATURES) + FEATURES.length);
+    element.offer.features = FEATURES.slice(getRandomIndex(FEATURES));
     element.offer.description = `строка с описанием`;
     element.offer.photos = `http://o0.github.io/assets/images/tokyo/hotel${getRandomIndex(PHOTOS) + 1}.jpg`;
     element.location = {};
@@ -41,7 +41,7 @@ const getDataElements = (elementsQuantity) => {
   }
 };
 
-const data = getDataElements(PINS_QUANTITY);
+getDataElements(PINS_QUANTITY);
 
 const renderPin = (element) => {
   const pin = pinTemplate.cloneNode(true);
@@ -64,7 +64,7 @@ renderFragment(elements);
 
 const renderPins = (container, dataFragment) => {
   container.appendChild(dataFragment);
-}
+};
 
 renderPins(pinsContainer, fragment);
 
