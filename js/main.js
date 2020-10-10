@@ -7,8 +7,11 @@ const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const PINS_QUANTITY = 8;
 const elements = [];
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`.popup`);
 const pinsContainer = document.querySelector(`.map__pins`);
-const fragment = document.createDocumentFragment();
+const map = document.querySelector(`.map`);
+const fragmentPins = document.createDocumentFragment();
+const fragmentCards = document.createDocumentFragment();
 
 const getRandomNumber = (min, max) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -25,8 +28,8 @@ const getDataElements = (elementsQuantity) => {
     element.offer.title = `строка, заголовок предложения`;
     element.offer.price = getRandomNumber(1000, 1e6);
     element.offer.type = TYPES[getRandomIndex(TYPES)];
-    element.offer.rooms = `число, количество комнат`;
-    element.offer.guests = `число, количество гостей`;
+    element.offer.rooms = `число`;
+    element.offer.guests = `число`;
     element.offer.checkin = TIME_VALUES[getRandomIndex(TIME_VALUES)];
     element.offer.checkout = TIME_VALUES[getRandomIndex(TIME_VALUES)];
     element.offer.features = FEATURES.slice(getRandomIndex(FEATURES));
@@ -54,18 +57,53 @@ const renderPin = (element) => {
   return pin;
 };
 
-const renderFragment = (items) => {
+
+const renderCard = (element) => {
+  const card = cardTemplate.cloneNode(true);
+  const getType = (value) => {
+    if (value === 'flat') return 'Квартира';
+    if (value === 'house') return 'Дом';
+    if (value === 'bungalow') return 'Бунгало';
+    if (value === 'palace') return 'Дворец';
+  }
+
+  card.querySelector('.popup__title').textContent = element.offer.title;
+  card.querySelector('.popup__text--address').textContent = element.offer.address;
+  card.querySelector('.popup__text--price').textContent = `${element.offer.price}₽/ночь`;
+  card.querySelector('.popup__type').textContent = getType(element.offer.type);
+  card.querySelector('.popup__text--capacity').textContent = `${element.offer.rooms} комнаты для ${element.offer.guests} гостей.`;
+  card.querySelector('.popup__text--time').textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}.`;
+  card.querySelector('.popup__features').textContent = element.offer.features;
+  card.querySelector('.popup__description').textContent = element.offer.description;
+  card.querySelector('.popup__photo').src = element.offer.photos;
+  card.querySelector('.popup__avatar').src = element.author.avatar;
+
+  return card;
+}
+
+const renderFragmentPins = (items) => {
   for (let i = 0; i < items.length; i++) {
-    fragment.appendChild(renderPin(items[i]));
+    fragmentPins.appendChild(renderPin(items[i]));
   }
 };
+renderFragmentPins(elements);
 
-renderFragment(elements);
+const renderFragmentCards = (items) => {
+  for (let i = 0; i < items.length; i++) {
+    fragmentCards.appendChild(renderCard(items[i]));
+  }
+};
+renderFragmentCards(elements);
 
 const renderPins = (container, dataFragment) => {
   container.appendChild(dataFragment);
 };
 
-renderPins(pinsContainer, fragment);
+const renderCards = (container, dataFragment, elementBefore) => {
+  container.insertBefore(dataFragment, elementBefore);
+}
 
-document.querySelector(`.map`).classList.remove(`map--faded`);
+renderPins(pinsContainer, fragmentPins);
+renderCards(map, fragmentCards, map.querySelector('.map__filters-container'));
+
+map.classList.remove(`map--faded`);
