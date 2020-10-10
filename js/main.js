@@ -61,25 +61,34 @@ const renderPin = (element) => {
 const renderCard = (element) => {
   const card = cardTemplate.cloneNode(true);
   const getType = (value) => {
-    if (value === 'flat') return 'Квартира';
-    if (value === 'house') return 'Дом';
-    if (value === 'bungalow') return 'Бунгало';
-    if (value === 'palace') return 'Дворец';
-  }
+    if (value === `flat`) {
+      return `Квартира`;
+    }
+    if (value === `house`) {
+      return `Дом`;
+    }
+    if (value === `bungalow`) {
+      return `Бунгало`;
+    }
+    if (value === `palace`) {
+      return `Дворец`;
+    }
+    return ``;
+  };
 
-  card.querySelector('.popup__title').textContent = element.offer.title;
-  card.querySelector('.popup__text--address').textContent = element.offer.address;
-  card.querySelector('.popup__text--price').textContent = `${element.offer.price}₽/ночь`;
-  card.querySelector('.popup__type').textContent = getType(element.offer.type);
-  card.querySelector('.popup__text--capacity').textContent = `${element.offer.rooms} комнаты для ${element.offer.guests} гостей.`;
-  card.querySelector('.popup__text--time').textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}.`;
-  card.querySelector('.popup__features').textContent = element.offer.features;
-  card.querySelector('.popup__description').textContent = element.offer.description;
-  card.querySelector('.popup__photo').src = element.offer.photos;
-  card.querySelector('.popup__avatar').src = element.author.avatar;
+  card.querySelector(`.popup__title`).textContent = element.offer.title;
+  card.querySelector(`.popup__text--address`).textContent = element.offer.address;
+  card.querySelector(`.popup__text--price`).textContent = `${element.offer.price}₽/ночь`;
+  card.querySelector(`.popup__type`).textContent = getType(element.offer.type);
+  card.querySelector(`.popup__text--capacity`).textContent = `${element.offer.rooms} комнаты для ${element.offer.guests} гостей.`;
+  card.querySelector(`.popup__text--time`).textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}.`;
+  card.querySelector(`.popup__features`).textContent = element.offer.features;
+  card.querySelector(`.popup__description`).textContent = element.offer.description;
+  card.querySelector(`.popup__photo`).src = element.offer.photos;
+  card.querySelector(`.popup__avatar`).src = element.author.avatar;
 
   return card;
-}
+};
 
 const renderFragmentPins = (items) => {
   for (let i = 0; i < items.length; i++) {
@@ -101,9 +110,9 @@ const renderPins = (container, dataFragment) => {
 
 const renderCards = (container, dataFragment, elementBefore) => {
   container.insertBefore(dataFragment, elementBefore);
-}
+};
 
 renderPins(pinsContainer, fragmentPins);
-renderCards(map, fragmentCards, map.querySelector('.map__filters-container'));
+renderCards(map, fragmentCards, map.querySelector(`.map__filters-container`));
 
 map.classList.remove(`map--faded`);
