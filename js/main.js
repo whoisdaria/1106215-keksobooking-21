@@ -4,6 +4,12 @@ const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `condit
 const TIME_VALUES = [`12:00`, `13:00`, `14:00`];
 const PHOTOS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
+const TYPES_IN_RUSSIAN = {
+  flat: `Квартира`,
+  house: `Дом`,
+  bungalow: `Бунгало`,
+  palace: `Дворец`
+};
 const PINS_QUANTITY = 8;
 const elements = [];
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
@@ -11,7 +17,6 @@ const cardTemplate = document.querySelector(`#card`).content.querySelector(`.pop
 const pinsContainer = document.querySelector(`.map__pins`);
 const map = document.querySelector(`.map`);
 const fragmentPins = document.createDocumentFragment();
-const fragmentCards = document.createDocumentFragment();
 
 const getRandomNumber = (min, max) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -34,7 +39,7 @@ const getDataElements = (elementsQuantity) => {
     element.offer.checkout = TIME_VALUES[getRandomIndex(TIME_VALUES)];
     element.offer.features = FEATURES.slice(getRandomIndex(FEATURES));
     element.offer.description = `строка с описанием`;
-    element.offer.photos = `http://o0.github.io/assets/images/tokyo/hotel${getRandomIndex(PHOTOS) + 1}.jpg`;
+    element.offer.photos = PHOTOS;
     element.location = {};
     element.location.x = getRandomNumber(0, pinsContainer.offsetWidth);
     element.location.y = getRandomNumber(130, 630);
@@ -57,35 +62,47 @@ const renderPin = (element) => {
   return pin;
 };
 
-
 const renderCard = (element) => {
   const card = cardTemplate.cloneNode(true);
-  const getType = (value) => {
-    if (value === `flat`) {
-      return `Квартира`;
-    }
-    if (value === `house`) {
-      return `Дом`;
-    }
-    if (value === `bungalow`) {
-      return `Бунгало`;
-    }
-    if (value === `palace`) {
-      return `Дворец`;
-    }
-    return ``;
-  };
+
+  const cardFeatures = card.querySelector(`.popup__features`);
+  const feature = card.querySelector(`.popup__feature`);
+  const cardPhotos = card.querySelector(`.popup__photos`);
+  const photo = card.querySelector(`.popup__photo`);
 
   card.querySelector(`.popup__title`).textContent = element.offer.title;
   card.querySelector(`.popup__text--address`).textContent = element.offer.address;
   card.querySelector(`.popup__text--price`).textContent = `${element.offer.price}₽/ночь`;
-  card.querySelector(`.popup__type`).textContent = getType(element.offer.type);
+  card.querySelector(`.popup__type`).textContent = TYPES_IN_RUSSIAN[element.offer.type];
   card.querySelector(`.popup__text--capacity`).textContent = `${element.offer.rooms} комнаты для ${element.offer.guests} гостей.`;
   card.querySelector(`.popup__text--time`).textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}.`;
-  card.querySelector(`.popup__features`).textContent = element.offer.features;
   card.querySelector(`.popup__description`).textContent = element.offer.description;
   card.querySelector(`.popup__photo`).src = element.offer.photos;
   card.querySelector(`.popup__avatar`).src = element.author.avatar;
+
+  //  features
+
+  while (cardFeatures.firstChild) {
+    cardFeatures.removeChild(cardFeatures.firstChild);
+  }
+
+  for (let i = 0; i < element.offer.features.length; i++) {
+    const featureElement = feature.cloneNode(true);
+    featureElement.className = `popup__feature popup__feature--${element.offer.features[i]}`;
+    cardFeatures.appendChild(featureElement);
+  }
+
+  //  photos
+
+  while (cardPhotos.firstChild) {
+    cardPhotos.removeChild(cardPhotos.firstChild);
+  }
+
+  for (let i = 0; i < element.offer.photos.length; i++) {
+    const photoElement = photo.cloneNode(true);
+    photoElement.src = element.offer.photos[i];
+    cardPhotos.appendChild(photoElement);
+  }
 
   return card;
 };
@@ -97,22 +114,13 @@ const renderFragmentPins = (items) => {
 };
 renderFragmentPins(elements);
 
-const renderFragmentCards = (items) => {
-  for (let i = 0; i < items.length; i++) {
-    fragmentCards.appendChild(renderCard(items[i]));
-  }
-};
-renderFragmentCards(elements);
-
 const renderPins = (container, dataFragment) => {
   container.appendChild(dataFragment);
 };
-
-const renderCards = (container, dataFragment, elementBefore) => {
-  container.insertBefore(dataFragment, elementBefore);
-};
-
 renderPins(pinsContainer, fragmentPins);
-renderCards(map, fragmentCards, map.querySelector(`.map__filters-container`));
+
+//  render first card
+
+map.insertBefore(renderCard(elements[0]), map.querySelector(`.map__filters-container`));
 
 map.classList.remove(`map--faded`);
