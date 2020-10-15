@@ -28,13 +28,13 @@ const removeExtraItems = (items) => {
   while (items.firstChild) {
     items.removeChild(items.firstChild);
   }
-}
+};
 
 const hideEmptyBlock = (items, block) => {
-  if (items.length == 1) {
+  if (items.length === 0) {
     block.style.display = `none`;
   }
-}
+};
 
 const getDataElements = (elementsQuantity) => {
   for (let i = 0; i < elementsQuantity; i++) {
@@ -91,12 +91,9 @@ const renderCard = (element) => {
   card.querySelector(`.popup__description`).textContent = element.offer.description;
   card.querySelector(`.popup__avatar`).src = element.author.avatar;
 
-  hideEmptyBlock(element.offer.features, cardFeatures);
-  hideEmptyBlock(element.offer.photos, cardPhotos);
-
   //  features
 
-  removeExtraItems(cardFeatures)
+  removeExtraItems(cardFeatures);
 
   for (let i = 0; i < element.offer.features.length; i++) {
     const featureElement = feature.cloneNode(true);
@@ -104,15 +101,19 @@ const renderCard = (element) => {
     cardFeatures.appendChild(featureElement);
   }
 
+  hideEmptyBlock(element.offer.features, cardFeatures);
+
   //  photos
 
-  removeExtraItems(cardPhotos)
+  removeExtraItems(cardPhotos);
 
   for (let i = 0; i < element.offer.photos.length; i++) {
     const photoElement = photo.cloneNode(true);
     photoElement.src = element.offer.photos[i];
     cardPhotos.appendChild(photoElement);
   }
+
+  hideEmptyBlock(element.offer.photos, cardPhotos);
 
   return card;
 };
