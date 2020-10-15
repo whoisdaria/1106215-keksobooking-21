@@ -24,6 +24,18 @@ const getRandomNumber = (min, max) => {
 
 const getRandomIndex = (items) => getRandomNumber(0, items.length - 1);
 
+const removeExtraItems = (items) => {
+  while (items.firstChild) {
+    items.removeChild(items.firstChild);
+  }
+}
+
+const hideEmptyBlock = (items, block) => {
+  if (items.length == 1) {
+    block.style.display = `none`;
+  }
+}
+
 const getDataElements = (elementsQuantity) => {
   for (let i = 0; i < elementsQuantity; i++) {
     const element = {};
@@ -77,14 +89,14 @@ const renderCard = (element) => {
   card.querySelector(`.popup__text--capacity`).textContent = `${element.offer.rooms} комнаты для ${element.offer.guests} гостей.`;
   card.querySelector(`.popup__text--time`).textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}.`;
   card.querySelector(`.popup__description`).textContent = element.offer.description;
-  card.querySelector(`.popup__photo`).src = element.offer.photos;
   card.querySelector(`.popup__avatar`).src = element.author.avatar;
+
+  hideEmptyBlock(element.offer.features, cardFeatures);
+  hideEmptyBlock(element.offer.photos, cardPhotos);
 
   //  features
 
-  while (cardFeatures.firstChild) {
-    cardFeatures.removeChild(cardFeatures.firstChild);
-  }
+  removeExtraItems(cardFeatures)
 
   for (let i = 0; i < element.offer.features.length; i++) {
     const featureElement = feature.cloneNode(true);
@@ -94,9 +106,7 @@ const renderCard = (element) => {
 
   //  photos
 
-  while (cardPhotos.firstChild) {
-    cardPhotos.removeChild(cardPhotos.firstChild);
-  }
+  removeExtraItems(cardPhotos)
 
   for (let i = 0; i < element.offer.photos.length; i++) {
     const photoElement = photo.cloneNode(true);
