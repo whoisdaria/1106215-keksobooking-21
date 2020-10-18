@@ -29,6 +29,11 @@ const typeApartment = adForm.querySelector(`#type`);
 const priceApartment = adForm.querySelector(`#price`);
 const timeIn = adForm.querySelector(`#timein`);
 const timeOut = adForm.querySelector(`#timeout`);
+const rooms = adForm.querySelector(`#room_number`);
+const capacity = adForm.querySelector(`#capacity`);
+const capacityOptions = capacity.querySelectorAll(`option`);
+const addressField = adForm.querySelector(`#address`);
+
 
 // неактивный режим
 
@@ -126,6 +131,75 @@ timeIn.addEventListener(`change`, () => {
 timeOut.addEventListener(`change`, () => {
   setTimeIn();
 });
+
+// валидация комнат
+
+const setRoomCapacity = () => {
+  if (rooms.value === `1`) {
+    capacity.value = rooms.value;
+    capacityOptions.forEach((option) => {
+      if (option.value !== rooms.value) {
+        option.disabled = true;
+      } else {
+        option.disabled = false;
+      }
+    });
+  }
+  if (rooms.value === `2`) {
+    capacity.value = rooms.value;
+    capacityOptions.forEach((option) => {
+      if (option.value !== rooms.value && option.value !== `1`) {
+        option.disabled = true;
+      } else {
+        option.disabled = false;
+      }
+    });
+  }
+  if (rooms.value === `3`) {
+    capacity.value = rooms.value;
+    capacityOptions.forEach((option) => {
+      if (option.value !== rooms.value && option.value !== `1` && option.value !== `2`) {
+        option.disabled = true;
+      } else {
+        option.disabled = false;
+      }
+    });
+  }
+  if (rooms.value === `100`) {
+    capacity.value = `0`;
+    capacityOptions.forEach((option) => {
+      if (option.value !== `0`) {
+        option.disabled = true;
+      } else {
+        option.disabled = false;
+      }
+    });
+  }
+};
+setRoomCapacity();
+
+rooms.addEventListener(`change`, () => {
+  setRoomCapacity();
+});
+
+// валидация поля адреса
+
+const getPinLocatoin = (pinElement) => {
+  if (map.classList.contains(`map--faded`)) {
+    return `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height / 2)}`;
+  } else {
+    return `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height)}`;
+  }
+};
+
+const setAddress = () => {
+  addressField.disabled = true;
+  addressField.value = getPinLocatoin(mainPin);
+};
+
+setAddress();
+
+//
 
 const getRandomNumber = (min, max) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
