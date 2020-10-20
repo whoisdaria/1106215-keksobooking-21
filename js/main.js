@@ -13,7 +13,7 @@ const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const PINS_QUANTITY = 8;
 const TITLE_MIN_LENGTH = 30;
 const TITLE_MAX_LENGTH = 100;
-const TYPEMINPRICE = {
+const TYPE_MIN_PRICE = {
   bungalow: `0`,
   flat: `1000`,
   house: `5000`,
@@ -24,7 +24,7 @@ const ROOM_CAPACiTY = {
   twoRooms: `2`,
   treeRooms: `3`,
   manyRooms: `0`
-}
+};
 const elements = [];
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 // const cardTemplate = document.querySelector(`#card`).content.querySelector(`.popup`);
@@ -109,8 +109,8 @@ formTitle.addEventListener(`input`, () => {
 // валидация минимальной цены
 
 const setApartmentMinPrice = () => {
-  priceApartment.min = TYPEMINPRICE[typeApartment.value];
-  priceApartment.placeholder = TYPEMINPRICE[typeApartment.value];
+  priceApartment.min = TYPE_MIN_PRICE[typeApartment.value];
+  priceApartment.placeholder = TYPE_MIN_PRICE[typeApartment.value];
 };
 setApartmentMinPrice();
 
@@ -177,7 +177,7 @@ const getPinLocatoin = (pinElement) => {
   return (map.classList.contains(`map--faded`)) ?
     `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height / 2)}` :
     `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height)}`;
-}
+};
 
 const setAddress = () => {
   addressField.readOnly = true;
