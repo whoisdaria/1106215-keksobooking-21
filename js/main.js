@@ -13,6 +13,18 @@ const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const PINS_QUANTITY = 8;
 const TITLE_MIN_LENGTH = 30;
 const TITLE_MAX_LENGTH = 100;
+const TYPEMINPRICE = {
+  bungalow: `0`,
+  flat: `1000`,
+  house: `5000`,
+  palace: `10000`
+};
+const ROOM_CAPACiTY = {
+  oneRoom: `1`,
+  twoRooms: `2`,
+  treeRooms: `3`,
+  manyRooms: `0`
+}
 const elements = [];
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 // const cardTemplate = document.querySelector(`#card`).content.querySelector(`.popup`);
@@ -37,7 +49,7 @@ const addressField = adForm.querySelector(`#address`);
 
 // неактивный режим
 
-const offActiveMode = () => {
+const removeActiveMode = () => {
   adFormHeader.setAttribute(`disabled`, `disabled`);
   adFormElements.forEach((element) => {
     element.setAttribute(`disabled`, `disabled`);
@@ -47,11 +59,11 @@ const offActiveMode = () => {
   });
 };
 
-offActiveMode();
+removeActiveMode();
 
 // активный режим
 
-const onActiveMode = () => {
+const setActiveMode = () => {
   map.classList.remove(`map--faded`);
   adForm.classList.remove(`ad-form--disabled`);
   adFormHeader.removeAttribute(`disabled`, `disabled`);
@@ -62,17 +74,20 @@ const onActiveMode = () => {
     element.removeAttribute(`disabled`, `disabled`);
   });
   renderPins(pinsContainer, fragmentPins);
+
+  mainPin.removeEventListener(`mousedown`, setActiveMode);
+  mainPin.removeEventListener(`keydown`, setActiveMode);
 };
 
 mainPin.addEventListener(`mousedown`, (evt) => {
   if (evt.which === 1) {
-    onActiveMode();
+    setActiveMode();
   }
 });
 
 mainPin.addEventListener(`keydown`, (evt) => {
   if (evt.key === `Enter`) {
-    onActiveMode();
+    setActiveMode();
   }
 });
 
@@ -94,19 +109,8 @@ formTitle.addEventListener(`input`, () => {
 // валидация минимальной цены
 
 const setApartmentMinPrice = () => {
-  if (typeApartment.value === `bungalow`) {
-    priceApartment.min = `0`;
-    priceApartment.placeholder = `0`;
-  } else if (typeApartment.value === `flat`) {
-    priceApartment.min = `1000`;
-    priceApartment.placeholder = `1000`;
-  } else if (typeApartment.value === `house`) {
-    priceApartment.min = `5000`;
-    priceApartment.placeholder = `5000`;
-  } else if (typeApartment.value === `palace`) {
-    priceApartment.min = `10000`;
-    priceApartment.placeholder = `10000`;
-  }
+  priceApartment.min = TYPEMINPRICE[typeApartment.value];
+  priceApartment.placeholder = TYPEMINPRICE[typeApartment.value];
 };
 setApartmentMinPrice();
 
@@ -134,45 +138,30 @@ timeOut.addEventListener(`change`, () => {
 
 // валидация комнат
 
+
 const setRoomCapacity = () => {
   if (rooms.value === `1`) {
     capacity.value = rooms.value;
     capacityOptions.forEach((option) => {
-      if (option.value !== rooms.value) {
-        option.disabled = true;
-      } else {
-        option.disabled = false;
-      }
+      option.disabled = (option.value !== rooms.value);
     });
   }
   if (rooms.value === `2`) {
     capacity.value = rooms.value;
     capacityOptions.forEach((option) => {
-      if (option.value !== rooms.value && option.value !== `1`) {
-        option.disabled = true;
-      } else {
-        option.disabled = false;
-      }
+      option.disabled = (option.value !== rooms.value && option.value !== ROOM_CAPACiTY.oneRoom);
     });
   }
   if (rooms.value === `3`) {
     capacity.value = rooms.value;
     capacityOptions.forEach((option) => {
-      if (option.value !== rooms.value && option.value !== `1` && option.value !== `2`) {
-        option.disabled = true;
-      } else {
-        option.disabled = false;
-      }
+      option.disabled = (option.value !== rooms.value && option.value !== ROOM_CAPACiTY.oneRoom && option.value !== ROOM_CAPACiTY.twoRooms);
     });
   }
   if (rooms.value === `100`) {
-    capacity.value = `0`;
+    capacity.value = ROOM_CAPACiTY.manyRooms;
     capacityOptions.forEach((option) => {
-      if (option.value !== `0`) {
-        option.disabled = true;
-      } else {
-        option.disabled = false;
-      }
+      option.disabled = (option.value !== ROOM_CAPACiTY.manyRooms);
     });
   }
 };
@@ -185,15 +174,13 @@ rooms.addEventListener(`change`, () => {
 // валидация поля адреса
 
 const getPinLocatoin = (pinElement) => {
-  if (map.classList.contains(`map--faded`)) {
-    return `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height / 2)}`;
-  } else {
-    return `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height)}`;
-  }
-};
+  return (map.classList.contains(`map--faded`)) ?
+    `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height / 2)}` :
+    `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height)}`;
+}
 
 const setAddress = () => {
-  addressField.disabled = true;
+  addressField.readOnly = true;
   addressField.value = getPinLocatoin(mainPin);
 };
 
