@@ -19,7 +19,7 @@ const TYPE_MIN_PRICE = {
   house: `5000`,
   palace: `10000`
 };
-const ROOM_CAPACiTY = {
+const ROOM_CAPACITY = {
   oneRoom: `1`,
   twoRooms: `2`,
   treeRooms: `3`,
@@ -149,19 +149,19 @@ const setRoomCapacity = () => {
   if (rooms.value === `2`) {
     capacity.value = rooms.value;
     capacityOptions.forEach((option) => {
-      option.disabled = (option.value !== rooms.value && option.value !== ROOM_CAPACiTY.oneRoom);
+      option.disabled = (option.value !== rooms.value && option.value !== ROOM_CAPACITY.oneRoom);
     });
   }
   if (rooms.value === `3`) {
     capacity.value = rooms.value;
     capacityOptions.forEach((option) => {
-      option.disabled = (option.value !== rooms.value && option.value !== ROOM_CAPACiTY.oneRoom && option.value !== ROOM_CAPACiTY.twoRooms);
+      option.disabled = (option.value !== rooms.value && option.value !== ROOM_CAPACITY.oneRoom && option.value !== ROOM_CAPACITY.twoRooms);
     });
   }
   if (rooms.value === `100`) {
-    capacity.value = ROOM_CAPACiTY.manyRooms;
+    capacity.value = ROOM_CAPACITY.manyRooms;
     capacityOptions.forEach((option) => {
-      option.disabled = (option.value !== ROOM_CAPACiTY.manyRooms);
+      option.disabled = (option.value !== ROOM_CAPACITY.manyRooms);
     });
   }
 };
