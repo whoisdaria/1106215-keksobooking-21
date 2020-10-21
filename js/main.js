@@ -75,21 +75,18 @@ const setActiveMode = () => {
   });
   renderPins(pinsContainer, fragmentPins);
 
-  mainPin.removeEventListener(`mousedown`, setActiveMode);
-  mainPin.removeEventListener(`keydown`, setActiveMode);
 };
 
-mainPin.addEventListener(`mousedown`, (evt) => {
-  if (evt.which === 1) {
+const onMainPinClick = (evt) => {
+  if (evt.which === 1 || evt.key === `Enter`) {
     setActiveMode();
   }
-});
+  mainPin.removeEventListener(`mousedown`, onMainPinClick);
+  mainPin.removeEventListener(`keydown`, onMainPinClick);
+};
 
-mainPin.addEventListener(`keydown`, (evt) => {
-  if (evt.key === `Enter`) {
-    setActiveMode();
-  }
-});
+mainPin.addEventListener(`mousedown`, onMainPinClick);
+mainPin.addEventListener(`keydown`, onMainPinClick);
 
 // валидация заголовка
 
@@ -174,9 +171,7 @@ rooms.addEventListener(`change`, () => {
 // валидация поля адреса
 
 const getPinLocatoin = (pinElement) => {
-  return (map.classList.contains(`map--faded`)) ?
-    `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height / 2)}` :
-    `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height)}`;
+  return `${Math.round(pinElement.getBoundingClientRect().left + pinElement.getBoundingClientRect().width / 2)}, ${Math.round((pinElement.getBoundingClientRect().top + pageYOffset) + pinElement.getBoundingClientRect().height / `${(map.classList.contains(`map--faded`)) ? 2 : 1 }`)}`;
 };
 
 const setAddress = () => {
