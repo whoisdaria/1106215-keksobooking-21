@@ -74,19 +74,26 @@ const setActiveMode = () => {
     element.removeAttribute(`disabled`, `disabled`);
   });
   renderPins(pinsContainer, fragmentPins);
-
 };
 
-const onMainPinClick = (evt) => {
-  if (evt.which === 1 || evt.key === `Enter`) {
+const onMainPinMousedown = (evt) => {
+  if (evt.which === 1) {
     setActiveMode();
   }
-  mainPin.removeEventListener(`mousedown`, onMainPinClick);
-  mainPin.removeEventListener(`keydown`, onMainPinClick);
+  mainPin.removeEventListener(`mousedown`, onMainPinMousedown);
+  mainPin.removeEventListener(`keydown`, onMainPinKeydown);
 };
 
-mainPin.addEventListener(`mousedown`, onMainPinClick);
-mainPin.addEventListener(`keydown`, onMainPinClick);
+const onMainPinKeydown = (evt) => {
+  if (evt.key === `Enter`) {
+    setActiveMode();
+  }
+  mainPin.removeEventListener(`mousedown`, onMainPinMousedown);
+  mainPin.removeEventListener(`keydown`, onMainPinKeydown);
+};
+
+mainPin.addEventListener(`mousedown`, onMainPinMousedown);
+mainPin.addEventListener(`keydown`, onMainPinKeydown);
 
 // валидация заголовка
 
