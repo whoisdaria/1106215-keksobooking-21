@@ -25,6 +25,7 @@ const ROOM_CAPACITY = {
   treeRooms: `3`,
   manyRooms: `0`
 };
+const MAX_PRICE = 1000000;
 const elements = [];
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 const cardTemplate = document.querySelector(`#card`).content.querySelector(`.popup`);
@@ -119,6 +120,17 @@ setApartmentMinPrice();
 
 typeApartment.addEventListener(`change`, () => {
   setApartmentMinPrice();
+});
+
+priceApartment.addEventListener(`input`, () => {
+  const priceValue = Number(priceApartment.value);
+  if (priceValue > MAX_PRICE) {
+    priceApartment.setCustomValidity(`Цена за сутки не может превышать ${MAX_PRICE}`);
+  } else {
+    priceApartment.setCustomValidity(``);
+  }
+
+  priceApartment.reportValidity();
 });
 
 // валидация времени
