@@ -73,6 +73,8 @@ const setActiveMode = () => {
   mapFilters.forEach((element) => {
     element.removeAttribute(`disabled`, `disabled`);
   });
+  mainPin.removeEventListener(`mousedown`, onMainPinMousedown);
+  mainPin.removeEventListener(`keydown`, onMainPinKeydown);
   renderPins(pinsContainer, fragmentPins);
 };
 
@@ -80,8 +82,6 @@ const onMainPinMousedown = (evt) => {
   if (evt.which === 1) {
     setActiveMode();
   }
-  mainPin.removeEventListener(`mousedown`, onMainPinMousedown);
-  mainPin.removeEventListener(`keydown`, onMainPinKeydown);
 };
 
 const onMainPinKeydown = (evt) => {
@@ -124,11 +124,7 @@ typeApartment.addEventListener(`change`, () => {
 
 priceApartment.addEventListener(`input`, () => {
   const priceValue = Number(priceApartment.value);
-  if (priceValue > MAX_PRICE) {
-    priceApartment.setCustomValidity(`Цена за сутки не может превышать ${MAX_PRICE}`);
-  } else {
-    priceApartment.setCustomValidity(``);
-  }
+  priceApartment.setCustomValidity(`${(priceValue > MAX_PRICE) ? `Цена за сутки не может превышать ${MAX_PRICE}` : ``}`);
 
   priceApartment.reportValidity();
 });
@@ -198,25 +194,13 @@ const setAddress = () => {
 
 setAddress();
 
-//
+// get data
 
 const getRandomNumber = (min, max) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
 const getRandomIndex = (items) => getRandomNumber(0, items.length - 1);
-
-const removeExtraItems = (items) => {
-  while (items.firstChild) {
-    items.removeChild(items.firstChild);
-  }
-};
-
-const hideEmptyBlock = (items, block) => {
-  if (items.length === 0) {
-    block.style.display = `none`;
-  }
-};
 
 const getDataElements = (elementsQuantity) => {
   for (let i = 0; i < elementsQuantity; i++) {
@@ -258,6 +242,19 @@ const renderPin = (element) => {
   return pin;
 };
 
+// close card
+
+const closeCard = (item) => {
+  item.remove();
+  window.removeEventListener(`keydown`, onEscapeKeydown(item));
+};
+
+const onEscapeKeydown = (item) => (evt) => {
+  if (evt.key === `Escape`) {
+    closeCard(item);
+  }
+};
+
 // render card
 
 const renderCard = (element) => {
@@ -269,22 +266,14 @@ const renderCard = (element) => {
   const photo = card.querySelector(`.popup__photo`);
   const buttonClose = card.querySelector(`.popup__close`);
 
-  const closeCard = () => {
-    card.style.display = `none`;
+  const onButtonCloseClick = (item) => (evt) => {
+    if (evt.target === buttonClose) {
+      closeCard(item);
+    }
   };
 
-  const onButtonCloseClick = (evt) => {
-    if (evt.target === buttonClose) {
-      closeCard();
-    }
-  };
-  const onEscapeKeydown = (evt) => {
-    if (evt.key === `Escape`) {
-      closeCard();
-    }
-  };
-  card.addEventListener(`click`, onButtonCloseClick);
-  window.addEventListener(`keydown`, onEscapeKeydown);
+  buttonClose.addEventListener(`click`, onButtonCloseClick(card));
+  window.addEventListener(`keydown`, onEscapeKeydown(card));
 
   card.querySelector(`.popup__title`).textContent = element.offer.title;
   card.querySelector(`.popup__text--address`).textContent = element.offer.address;
@@ -297,7 +286,17 @@ const renderCard = (element) => {
 
   //  features
 
-  removeExtraItems(cardFeatures);
+  const removeExtraItems = (items) => {
+    while (items.firstChild) {
+      items.removeChild(items.firstChild);
+    }
+  };
+
+  const hideEmptyBlock = (items, block) => {
+    if (items.length === 0) {
+      block.style.display = `none`;
+    }
+  };
 
   for (let i = 0; i < element.offer.features.length; i++) {
     const featureElement = feature.cloneNode(true);
@@ -305,6 +304,7 @@ const renderCard = (element) => {
     cardFeatures.appendChild(featureElement);
   }
 
+  removeExtraItems(cardFeatures);
   hideEmptyBlock(element.offer.features, cardFeatures);
 
   //  photos
@@ -323,22 +323,30 @@ const renderCard = (element) => {
 
 // render pin
 
+const onPinClick = (pin) => () => {
+  const card = renderCard(pin);
+  const allPins = document.querySelectorAll(`.map__pin`);
+  const oldCard = document.querySelector(`.popup`);
+  const userPin = renderPin(pin);
+
+  allPins.forEach((element) => {
+    element.classList.remove(`map__pin--active`);
+  });
+
+  // не понимаю почему не присваивается класс
+  userPin.classList.add(`map__pin--active`);
+
+  if (oldCard) {
+    closeCard(oldCard);
+  }
+  map.insertBefore(card, map.querySelector(`.map__filters-container`));
+};
+
 const renderFragmentPins = (items) => {
   for (let i = 0; i < items.length; i++) {
     const userPin = renderPin(items[i]);
     fragmentPins.appendChild(userPin);
-    // чтобы обособить обработчик, нужно туда передать аргумент items, но не понимаю как
-
-    const onPinClick = () => {
-      const card = renderCard(items[i]);
-      const oldCard = document.querySelector(`.popup`);
-      if (oldCard) {
-        map.removeChild(oldCard);
-      }
-      map.insertBefore(card, map.querySelector(`.map__filters-container`));
-    };
-
-    userPin.addEventListener(`click`, onPinClick);
+    userPin.addEventListener(`click`, onPinClick(items[i]));
   }
 };
 renderFragmentPins(elements);
