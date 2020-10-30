@@ -255,6 +255,8 @@ const closeCard = () => {
   const openedCard = map.querySelector(`.popup`);
   map.querySelector(`.map__pin--active`).classList.remove(`map__pin--active`);
   openedCard.remove();
+  //вот так он на совсем убирается
+  window.removeEventListener(`keydown`, keydownHandler);
 };
 
 // render card
@@ -342,7 +344,9 @@ const renderFragmentPins = (items) => {
     const userPin = renderPin(items[i]);
     fragmentPins.appendChild(userPin);
     userPin.addEventListener(`click`, pinClickHandler);
-    window.removeEventListener(`keydown`, keydownHandler);
+  // а вот так ок, кажется
+
+  // window.removeEventListener(`keydown`, keydownHandler);
   }
 };
 renderFragmentPins(elements);
