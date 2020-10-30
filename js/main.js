@@ -245,16 +245,16 @@ const renderPin = (element) => {
 
 // close card
 
-const closeCard = () => {
-  const openedCard = map.querySelector(`.popup`);
-  map.querySelector(`.map__pin--active`).classList.remove(`map__pin--active`);
-  openedCard.remove();
-};
-
 const keydownHandler = (evt) => {
   if (evt.key === `Escape`) {
     closeCard();
   }
+};
+
+const closeCard = () => {
+  const openedCard = map.querySelector(`.popup`);
+  map.querySelector(`.map__pin--active`).classList.remove(`map__pin--active`);
+  openedCard.remove();
 };
 
 // render card
@@ -267,12 +267,11 @@ const renderCard = (element) => {
   const cardPhotos = card.querySelector(`.popup__photos`);
   const photo = card.querySelector(`.popup__photo`);
   const buttonClose = card.querySelector(`.popup__close`);
-  const getButtonCloseClickHandler = () => (evt) => {
+  const buttonCloseClickHandler = (evt) => {
     if (evt.target === buttonClose) {
       closeCard();
     }
   };
-  const buttonCloseClickHandler = getButtonCloseClickHandler(card);
 
   buttonClose.addEventListener(`click`, buttonCloseClickHandler);
   window.addEventListener(`keydown`, keydownHandler);
@@ -343,6 +342,7 @@ const renderFragmentPins = (items) => {
     const userPin = renderPin(items[i]);
     fragmentPins.appendChild(userPin);
     userPin.addEventListener(`click`, pinClickHandler);
+    window.removeEventListener(`keydown`, keydownHandler);
   }
 };
 renderFragmentPins(elements);
