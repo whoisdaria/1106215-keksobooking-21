@@ -31,6 +31,7 @@ const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__
 const cardTemplate = document.querySelector(`#card`).content.querySelector(`.popup`);
 const pinsContainer = document.querySelector(`.map__pins`);
 const map = document.querySelector(`.map`);
+const filtersContainer = map.querySelector(`.map__filters-container`);
 const fragmentPins = document.createDocumentFragment();
 const mainPin = document.querySelector(`.map__pin--main`);
 const adForm = document.querySelector(`.ad-form`);
@@ -73,27 +74,27 @@ const setActiveMode = () => {
   mapFilters.forEach((element) => {
     element.removeAttribute(`disabled`, `disabled`);
   });
-  mainPin.removeEventListener(`mousedown`, onMainPinMousedown);
-  mainPin.removeEventListener(`keydown`, onMainPinKeydown);
+  mainPin.removeEventListener(`mousedown`, mainPinMousedownHandler);
+  mainPin.removeEventListener(`keydown`, mainPinKeydownHandler);
   renderPins(pinsContainer, fragmentPins);
 };
 
-const onMainPinMousedown = (evt) => {
+const mainPinMousedownHandler = (evt) => {
   if (evt.which === 1) {
     setActiveMode();
   }
 };
 
-const onMainPinKeydown = (evt) => {
+const mainPinKeydownHandler = (evt) => {
   if (evt.key === `Enter`) {
     setActiveMode();
   }
-  mainPin.removeEventListener(`mousedown`, onMainPinMousedown);
-  mainPin.removeEventListener(`keydown`, onMainPinKeydown);
+  mainPin.removeEventListener(`mousedown`, mainPinMousedownHandler);
+  mainPin.removeEventListener(`keydown`, mainPinKeydownHandler);
 };
 
-mainPin.addEventListener(`mousedown`, onMainPinMousedown);
-mainPin.addEventListener(`keydown`, onMainPinKeydown);
+mainPin.addEventListener(`mousedown`, mainPinMousedownHandler);
+mainPin.addEventListener(`keydown`, mainPinKeydownHandler);
 
 // валидация заголовка
 
@@ -244,14 +245,15 @@ const renderPin = (element) => {
 
 // close card
 
-const closeCard = (item) => {
-  item.remove();
-  window.removeEventListener(`keydown`, onEscapeKeydown(item));
+const closeCard = () => {
+  const openedCard = map.querySelector(`.popup`);
+  map.querySelector(`.map__pin--active`).classList.remove(`map__pin--active`);
+  openedCard.remove();
 };
 
-const onEscapeKeydown = (item) => (evt) => {
+const keydownHandler = (evt) => {
   if (evt.key === `Escape`) {
-    closeCard(item);
+    closeCard();
   }
 };
 
@@ -265,15 +267,15 @@ const renderCard = (element) => {
   const cardPhotos = card.querySelector(`.popup__photos`);
   const photo = card.querySelector(`.popup__photo`);
   const buttonClose = card.querySelector(`.popup__close`);
-
-  const onButtonCloseClick = (item) => (evt) => {
+  const getButtonCloseClickHandler = () => (evt) => {
     if (evt.target === buttonClose) {
-      closeCard(item);
+      closeCard();
     }
   };
+  const buttonCloseClickHandler = getButtonCloseClickHandler(card);
 
-  buttonClose.addEventListener(`click`, onButtonCloseClick(card));
-  window.addEventListener(`keydown`, onEscapeKeydown(card));
+  buttonClose.addEventListener(`click`, buttonCloseClickHandler);
+  window.addEventListener(`keydown`, keydownHandler);
 
   card.querySelector(`.popup__title`).textContent = element.offer.title;
   card.querySelector(`.popup__text--address`).textContent = element.offer.address;
@@ -323,30 +325,24 @@ const renderCard = (element) => {
 
 // render pin
 
-const onPinClick = (pin) => () => {
+const getPinClickHandler = (pin) => (evt) => {
   const card = renderCard(pin);
-  const allPins = document.querySelectorAll(`.map__pin`);
+  const currentPin = evt.target.closest(`.map__pin`);
   const oldCard = document.querySelector(`.popup`);
-  const userPin = renderPin(pin);
-
-  allPins.forEach((element) => {
-    element.classList.remove(`map__pin--active`);
-  });
-
-  // не понимаю почему не присваивается класс
-  userPin.classList.add(`map__pin--active`);
-
   if (oldCard) {
-    closeCard(oldCard);
+    closeCard();
   }
-  map.insertBefore(card, map.querySelector(`.map__filters-container`));
+  currentPin.classList.add(`map__pin--active`);
+  map.insertBefore(card, filtersContainer);
 };
 
 const renderFragmentPins = (items) => {
   for (let i = 0; i < items.length; i++) {
+    const pinClickHandler = getPinClickHandler(items[i]);
+
     const userPin = renderPin(items[i]);
     fragmentPins.appendChild(userPin);
-    userPin.addEventListener(`click`, onPinClick(items[i]));
+    userPin.addEventListener(`click`, pinClickHandler);
   }
 };
 renderFragmentPins(elements);
