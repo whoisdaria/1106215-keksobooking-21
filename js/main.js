@@ -255,7 +255,6 @@ const closeCard = () => {
   const openedCard = map.querySelector(`.popup`);
   map.querySelector(`.map__pin--active`).classList.remove(`map__pin--active`);
   openedCard.remove();
-  //вот так он на совсем убирается
   window.removeEventListener(`keydown`, keydownHandler);
 };
 
@@ -327,12 +326,12 @@ const renderCard = (element) => {
 // render pin
 
 const getPinClickHandler = (pin) => (evt) => {
-  const card = renderCard(pin);
   const currentPin = evt.target.closest(`.map__pin`);
   const oldCard = document.querySelector(`.popup`);
   if (oldCard) {
     closeCard();
   }
+  const card = renderCard(pin);
   currentPin.classList.add(`map__pin--active`);
   map.insertBefore(card, filtersContainer);
 };
@@ -344,9 +343,6 @@ const renderFragmentPins = (items) => {
     const userPin = renderPin(items[i]);
     fragmentPins.appendChild(userPin);
     userPin.addEventListener(`click`, pinClickHandler);
-  // а вот так ок, кажется
-
-  // window.removeEventListener(`keydown`, keydownHandler);
   }
 };
 renderFragmentPins(elements);
